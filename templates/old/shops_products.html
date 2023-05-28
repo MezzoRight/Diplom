@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Товары магазина {{ shop_name }}</title>
+    <link rel="shortcut icon" href="/{{ MEDIA_URL }}media/site-logo1.png" type="image/x-icon">
+    <style>
+      body {
+        overflow: scroll;
+        overflow-x: hidden;
+      }
+      ::placeholder {
+        color: black;
+      }
+      .fixed-size-image {
+          height: 300px;
+          width: 300px;
+          object-fit: contain;
+          padding: 10px;
+      }
+      *::-webkit-scrollbar {
+        width: 8px; /* Ширина скроллбара */
+      }
+      
+      *::-webkit-scrollbar-track {
+        background-color: #cbd0ff; /* Цвет фона трека */
+      }
+      
+      *::-webkit-scrollbar-thumb {
+        background-color: #003380; /* Цвет ползунка */
+      }
+      
+      *::-webkit-scrollbar-thumb:hover {
+        background-color: #0144a9; /* Цвет ползунка при наведении */
+      }
+      .logo {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        margin-right: 30px;
+      }
+      .category {
+        overflow-x: auto; /* Включение горизонтальной полосы прокрутки */
+        max-width: 100%; /* Установка максимальной ширины контейнера */
+    }
+    .form {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
+      .form button {
+        margin-left: 15px;
+      }
+      .container {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .grid {
+        display: grid !important;
+
+        padding: 0px 20px;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-columns: auto;
+        grid-gap: 15px;
+
+        place-items: center;
+      }
+
+      @media (max-width: 1400px) {
+        .grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 1200px) {
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 767px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .form {
+        margin-top: auto;
+      }
+    }
+
+      @media (max-width: 1000px) {
+        .grid {
+          grid-template-columns: repeat(1, 1fr);
+        }
+      }
+      html{
+        background-color: #f8f9fa;
+      }
+      .card {
+        transition: transform 0.2s ease;
+      }
+      .card:hover {
+        transform: translate(5px, 5px);
+      }
+      .navbar-nav .dropdown:hover .dropdown-menu {
+        display: block; /* Показываем выплывающее меню при наведении на элемент */
+      }
+      </style>
+</head>
+<body>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+<nav class="navbar navbar-expand-lg bg-body-secondary" data-bs-theme="dark">
+  <div class="container">
+    <div class="container-fluid">
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="true" aria-label="Переключатель навигации">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="navbar-collapse collapse show" id="navbarColor01">
+        <a class="" href="{% url 'home' %}">
+          <img class="navbar-brand logo" src="/{{ MEDIA_URL }}media/site-logo1.png" alt="">
+        </a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Главная</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'shops' %}">Магазины</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'brands' %}">Бренды</a>
+          </li>
+        </ul>
+        <form class="d-flex" role="search" method="get" action="{% url 'product_search' %}">
+          {{ form }}
+          <button class="btn btn-outline-light" type="submit">Поиск</button>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              var form = document.getElementById('product-search-form');
+              var input = form.querySelector('input[name="search_query"]');
+          
+              input.addEventListener('keydown', function(event) {
+                if (event.keyCode === 13) {
+                  event.preventDefault();
+                  form.submit();
+                }
+              });
+            });
+          </script>
+        </form>
+      </div>
+      </div>
+    </div>
+</nav>
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container d-flex category">
+    <ul class="navbar-nav flex-wrap">
+      {% for category in categories %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ category.name }}</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% for subcategory in category.subcategories.all %}
+          <a class="dropdown-item" href="{% url 'products' subcategory.id %}">{{ subcategory.name }}</a>
+          {% endfor %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>
+  <div class="container">
+    <div class="col-12 mt-4 mb-4">
+      <h1>Товары магазина: {{ shop_name }}</h1>
+    </div>
+    <div class="row grid">
+      {% for productsh in products %}
+          <div class="card">
+            <a
+              href="{% url 'product_detail' productsh.id %}"
+              class="card-link"
+              style="text-decoration: none"
+              px-2
+            >
+              <img
+                src="/{{ MEDIA_URL }}media/{{ productsh.product.image }}"
+                class="card-img-top fixed-size-image"
+                style="margin-top: 10px; margin-bottom: 10px"
+                alt="Картинка продукта"
+              />
+              <div class="card-body">
+                <h5 class="card-title">{{ productsh.product.name }}</h5>
+                <p class="card-text">
+                  {{ productsh.product.description|truncatechars:24 }}
+                </p>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">{{ productsh.price }} ₽</li>
+                  <li class="list-group-item">
+                    Бренд: {{ productsh.product.brand }}
+                  </li>
+                </ul>
+                <div class="card-footer">
+                  <a href="#" class="btn btn-primary">Купить</a>
+                </div>
+              </div>
+            </a>
+          </div>
+          {% endfor %}
+    </div>
+  </div>
+
+
+<div class="container" style="margin-top: 250px;">
+  <footer class="py-3 my-4">
+    <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+      <li class="nav-item"><a href="{% url 'home' %}" class="nav-link px-2 text-body-secondary">Главная</a></li>
+      <li class="nav-item"><a href="{% url 'shops' %}" class="nav-link px-2 text-body-secondary">Магазины</a></li>
+      <li class="nav-item"><a href="{% url 'brands' %}" class="nav-link px-2 text-body-secondary">Бренды</a></li>
+    </ul>
+    <p class="text-center text-body-secondary">© 2023 Company, Inc</p>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+
+</body>
+</html>
